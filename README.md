@@ -5,6 +5,7 @@ http://13.84.40.197:8787
 In order to use the same RStudio Project that I have set up, (so you will not have to load the files etc.), use these credentials userID: vivek
 pass: text me
 
+If you want to start with your own project then you can use your own login
 userid: aswath
 password: text me
 
