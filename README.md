@@ -1,2 +1,4 @@
 # rail_switch
-## code for switch filure
+## AZure info
+userid: aswath
+password: text me
