@@ -69,5 +69,4 @@ dt.event_time,
 dt.event_dt,
 dt.event_result,
 dt.event_type,
-dt.sensor_id,
-dt_temp.V1")
+dt.sensor_id")
