@@ -5,10 +5,11 @@ library(data.table);library(sqldf)
 #Data was in very bad format. The column headers were incomplete in the first row of csv
 #To address this issue, I am using a predefined list of col.names
 
+##Sensor Data
 #max number of fields (columns) in the dataaset - num of columns vary for each row
-max_cols = max(count.fields("C:/Users/vsinha/Documents/SWITCH_EVENT_SENSORDATA_LIST.csv", sep=";"))
+max_cols = max(count.fields("SWITCH_EVENT_SENSORDATA_LIST.csv", sep=";"))
 
-dt_sensor = read.table("C:/Users/vsinha/Documents/SWITCH_EVENT_SENSORDATA_LIST.csv", header = FALSE, sep = ";", 
+dt_sensor = read.table("SWITCH_EVENT_SENSORDATA_LIST.csv", header = FALSE, sep = ";", 
                        col.names = paste0("V",seq_len(max_cols)), fill = TRUE, dec=",", skip = 1,
                        colClasses = c("integer", "character", "numeric", "character",rep("numeric",720)))
 dt_sensor = as.data.table(dt_sensor)
@@ -17,29 +18,33 @@ dt_sensor$AllMetrics=NULL
 dt_sensor[, event_id := as.integer(event_id)]
 
 ##Event Data
-dt_event = as.data.table(read.csv("C:/Users/vsinha/Documents/SWITCH_USAGE_EVENT_LIST.csv", sep=";", dec = ","))
+dt_event = as.data.table(read.csv("SWITCH_USAGE_EVENT_LIST.csv", sep=";", dec = ","))
 dt_event[, event_id := as.integer(event_id)]
 dt_event = as.data.table(dt_event)
 
 ##Weather Data
-dt_weather = as.data.table(read.csv("C:/Users/vsinha/Documents/SWITCH_WEATHER_SENSORDATA_LIST.csv", sep=";", dec = ","))
+dt_weather = as.data.table(read.csv("SWITCH_WEATHER_SENSORDATA_LIST.csv", sep=";", dec = ","))
 dt_weather = as.data.table(dt_weather)
 
-#Merging all the datasets together
+#Merging all the datasets together (not merging Waether for now)
 dt = merge(dt_event, dt_sensor, by="event_id")
 
-#Creating a date field
+##Creating additional fields that we will use later
+#Creating a date only field
 dt[, event_dt:=as.Date(event_time),]
 
-##Adding cumulative count of failures (ranked by date)
+#Adding cumulative count of failures (ranked by date)
 dt[, n_failure := cumsum(event_result=="failure"), by=c("switch_id", "sensor_id")]
-#Adding a count of uses - resets at every failure
+
+#Adding a count of num of times a sensor was used - resets at every failure
 dt[, n_uses:=cumsum(event_result!="failure"), by=c("switch_id", "sensor_id", "n_failure")]
+
 
 #Creating aggregated dataset using sqldf
 ##Aggregating dataset - example for creating 7 day average with 7 day blackout period
 #----!!! This is running out of memory. so moving top AZURE VM at this point.
-dt_temp = 
+
+dt_temp = dt
 result = sqldf(
 "Select dt.event_id, 
 dt.switch_id,
