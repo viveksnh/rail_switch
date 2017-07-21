@@ -13,3 +13,5 @@ password: text me
 ## Hierarchy of the data
 1 Event ---> 1 Switch ---> N sensors (N vectors of length ~ 700 each)
 Multiple events per day
+
+test edit
